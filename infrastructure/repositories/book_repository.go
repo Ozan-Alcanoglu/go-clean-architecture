@@ -41,8 +41,12 @@ func (br *bookRepository) UpdateBook(book *models.Book) (*models.Book, error) {
 }
 
 func (br *bookRepository) DeleteBook(id uuid.UUID) error {
+	var book models.Book
+	if err := br.db.First(&book, id).Error; err != nil {
+		return err
+	}
 
-	if err := br.db.Where("id = ?", id).Delete(&models.Book{}).Error; err != nil {
+	if err := br.db.Select("Genres").Delete(&book).Error; err != nil {
 		return err
 	}
 
