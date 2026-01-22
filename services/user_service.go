@@ -20,8 +20,9 @@ func NewUserService(repo interfaces.UserRepository) interfaces.UserService {
 
 func (us *userService) CreateUser(createUserDto *dtos.CreateUserDto) (*dtos.UserResponseDto, error) {
 	user := &models.User{
-		Name:  createUserDto.Name,
-		Email: createUserDto.Email,
+		Name:     createUserDto.Name,
+		Email:    createUserDto.Email,
+		Password: createUserDto.Password,
 	}
 
 	if err := us.repo.CreateUser(user); err != nil {
@@ -29,9 +30,10 @@ func (us *userService) CreateUser(createUserDto *dtos.CreateUserDto) (*dtos.User
 	}
 
 	return &dtos.UserResponseDto{
-		Id:    user.ID,
-		Name:  user.Name,
-		Email: user.Email,
+		Id:       user.ID,
+		Name:     user.Name,
+		Email:    user.Email,
+		Password: user.Password,
 	}, nil
 }
 
@@ -44,9 +46,10 @@ func (us *userService) GetUserById(id uuid.UUID) (*dtos.UserResponseDto, error) 
 	}
 
 	response := &dtos.UserResponseDto{
-		Id:    user.ID,
-		Name:  user.Name,
-		Email: user.Email,
+		Id:       user.ID,
+		Name:     user.Name,
+		Email:    user.Email,
+		Password: user.Password,
 	}
 
 	return response, nil
@@ -67,6 +70,9 @@ func (us *userService) UpdateUser(id uuid.UUID, updateUserDto *dtos.UpdateUserDt
 	if updateUserDto.Email != nil {
 		user.Email = *updateUserDto.Email
 	}
+	if updateUserDto.Password != nil {
+		user.Password = *updateUserDto.Password
+	}
 
 	updated, err := us.repo.UpdateUser(user)
 
@@ -75,9 +81,10 @@ func (us *userService) UpdateUser(id uuid.UUID, updateUserDto *dtos.UpdateUserDt
 	}
 
 	response := &dtos.UserResponseDto{
-		Id:    updated.ID,
-		Name:  updated.Name,
-		Email: updated.Email,
+		Id:       updated.ID,
+		Name:     updated.Name,
+		Email:    updated.Email,
+		Password: updated.Password,
 	}
 
 	return response, nil

@@ -6,6 +6,7 @@ import (
 	dbconfig "gobackend/config"
 	"gobackend/domain/models"
 	"gobackend/infrastructure/repositories"
+	"gobackend/infrastructure/security"
 	"gobackend/services"
 	"log"
 
@@ -37,6 +38,7 @@ func main() {
 		&models.Genre{},
 		&models.Loan{},
 		&models.User{},
+		&models.RefreshToken{},
 	); err != nil {
 		log.Fatal("Migration hatasi: ", err)
 	}
@@ -46,18 +48,23 @@ func main() {
 	genreRepo := repositories.NewGenreRepository(db)
 	loanRepo := repositories.NewLoanRepository(db)
 	userRepo := repositories.NewUserRepository(db)
+	refreshTokenRepo := repositories.NewRefreshTokenRepository(db)
+
+	tokenService := security.NewJWTService()
 
 	authorService := services.NewAuthorService(authorRepo)
 	bookService := services.NewBookService(bookRepo)
 	genreService := services.NewGenreService(genreRepo)
 	loanService := services.NewLoanService(loanRepo)
 	userService := services.NewUserService(userRepo)
+	authService := services.NewAuthService(userRepo, tokenService, refreshTokenRepo)
 
 	authorHandler := handlers.NewAuthorHandler(authorService)
 	bookHandler := handlers.NewBookHandler(bookService)
 	genreHandler := handlers.NewGenreHandler(genreService)
 	loanHandler := handlers.NewLoanHandler(loanService)
 	userHandler := handlers.NewUserHandler(userService)
+	authHandler := handlers.NewAuthHandler(authService)
 
 	r := routes.SetupRouter(
 		authorHandler,
@@ -65,6 +72,8 @@ func main() {
 		genreHandler,
 		loanHandler,
 		userHandler,
+		authHandler,
+		tokenService,
 	)
 
 	if err := r.Run(":8080"); err != nil {

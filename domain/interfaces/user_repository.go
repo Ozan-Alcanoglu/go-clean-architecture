@@ -9,6 +9,7 @@ import (
 type UserRepository interface {
 	CreateUser(user *models.User) error
 	GetById(id uuid.UUID) (*models.User, error)
+	GetByEmail(email string) (*models.User, error)
 	DeleteUserById(id uuid.UUID) error
 	UpdateUser(user *models.User) (*models.User, error)
 }

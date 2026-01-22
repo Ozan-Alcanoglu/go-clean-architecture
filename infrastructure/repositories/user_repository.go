@@ -38,6 +38,20 @@ func (ur *userRepository) GetById(id uuid.UUID) (*models.User, error) {
 
 }
 
+func (ur *userRepository) GetByEmail(email string) (*models.User, error) {
+
+	var user models.User
+
+	err := ur.db.Where("email= ?", email).First(&user).Error
+
+	if err != nil {
+		return nil, err
+	}
+
+	return &user, nil
+
+}
+
 func (ur *userRepository) DeleteUserById(id uuid.UUID) error {
 	err := ur.db.Where("id = ?", id).Delete(&models.User{}).Error
 	if err != nil {
